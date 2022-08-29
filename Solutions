@@ -20,3 +20,91 @@ FROM pages
 Where page_id not in ( SELECT distinct page_id from page_likes);
 
 ============================================================================================
+
+Challenge Name: Laptop vs Mobile Viewership
+
+Solution:
+
+SELECT
+Sum(CASE WHEN device_type = 'laptop' THEN 1 ELSE 0 END) as laptop_views,
+Sum(CASE WHEN device_type <> 'laptop' THEN 1 ELSE 0 END) as mobile_views
+FROM viewership;
+
+============================================================================================
+
+Challenge Name: Purchasing Activity by Product Type
+
+Solution:
+SELECT order_date, product_type,
+Sum(quantity) OVER (partition by product_type ORDER BY order_date) as cum_purchased
+FROM total_trans
+ORDER BY order_date;
+
+============================================================================================
+
+Challenge Name: Teams Power Users
+
+SELECT sender_id, Count(message_id) c
+FROM messages
+WHERE EXTRACT(Month FROM sent_date) = '8' and EXTRACT(YEAR FROM sent_date) = '2022'
+GROUP BY sender_id
+ORDER BY c Desc
+LIMIT 2;
+
+============================================================================================
+
+Challenge Name: Highest Number of Products
+
+SELECT user_id, Count(product_id) as product_num
+FROM user_transactions
+GROUP BY user_id
+having Sum(spend) >= 1000
+ORDER BY product_num Desc, Sum(spend) Desc
+LIMIT 3;
+
+============================================================================================
+
+Challenge Name: Histogram of Tweets
+
+With t as
+(SELECT user_id, COUNT(tweet_id) as num_tweets
+FROM tweets
+WHERE tweet_date BETWEEN '2022-01-01' AND '2022-12-31'
+GROUP BY user_id)
+
+SELECT num_tweets, Count(user_id) as num_users
+FROM t
+group by num_tweets;
+
+============================================================================================
+
+Challenge Name: Spare Server Capacity
+
+With t as 
+(SELECT  f.datacenter_id, monthly_capacity, Sum(monthly_demand) as demand
+FROM forecasted_demand f 
+INNER JOIN datacenters d on f.datacenter_id = d.datacenter_id
+GROUP BY f.datacenter_id, monthly_capacity)
+
+SELECT datacenter_id, (monthly_capacity - demand) as spare_capacity
+FROM t
+ORDER BY datacenter_id;
+
+
+============================================================================================
+
+Challenge Name: Repeat Purchases on Multiple Days
+
+SELECT count(user_id) as num_user
+FROM 
+(SELECT user_id, product_id, count(distinct DATE(purchase_date)) 
+FROM purchases
+GROUP BY user_id, product_id
+HAVING count(distinct DATE(purchase_date)) > 1) as t;
+
+
+
+
+
+
+============================================================================================
