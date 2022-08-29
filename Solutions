@@ -1,0 +1,22 @@
+Challenge Name: Cities With Completed Trades
+
+Solution:
+
+SELECT city, Count(order_id) c
+FROM trades t inner join users u on t.user_id = u.user_id
+WHERE status='Completed'
+GROUP BY city
+ORDER BY c desc
+LIMIT 3
+
+============================================================================================
+
+Challenge Name: Page With No Likes
+
+Solution:
+
+SELECT page_id
+FROM pages
+Where page_id not in ( SELECT distinct page_id from page_likes);
+
+============================================================================================
