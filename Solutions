@@ -95,16 +95,31 @@ ORDER BY datacenter_id;
 
 Challenge Name: Repeat Purchases on Multiple Days
 
-SELECT count(user_id) as num_user
+SELECT Count(Distinct user_id) as num_user
 FROM 
-(SELECT user_id, product_id, count(distinct DATE(purchase_date)) 
+(SELECT user_id, product_id, Count(Distinct DATE(purchase_date)) 
 FROM purchases
 GROUP BY user_id, product_id
-HAVING count(distinct DATE(purchase_date)) > 1) as t;
+HAVING Count(Distinct DATE(purchase_date)) > 1) as t;
 
 
+--- OR --- Using CTE and Rank() ----
 
-
+WITH ranking AS (
+  SELECT 
+    user_id, 
+    RANK() OVER (PARTITION BY user_id, product_id 
+      ORDER BY DATE(purchase_date) ASC
+    ) AS purchase_no 
+  FROM 
+    purchases
+) 
+SELECT 
+  COUNT(DISTINCT user_id) AS users_num 
+FROM 
+  ranking 
+WHERE 
+  purchase_no = 2;
 
 
 ============================================================================================
