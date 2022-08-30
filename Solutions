@@ -123,3 +123,48 @@ WHERE
 
 
 ============================================================================================
+
+Challenge Name: Duplicate Job Listings
+
+WITH t as (
+SELECT RANK() OVER(partition by company_id,  title, description order by job_id) as dup_rank
+FROM job_listings)
+
+SELECT count(*) FROM t WHERE dup_rank <> 1; 
+
+
+============================================================================================
+
+Challenge Name: Average Post Hiatus (Part 1)
+
+SELECT user_id,
+MAX(post_date::DATE) - MIN(post_date:: DATE) as days_between
+FROM posts
+WHERE EXTRACT(YEAR from post_date) = '2021'
+GROUP BY user_id
+HAVING Count(post_id)>1;
+
+============================================================================================
+
+Challenge Name: App Clickthrough Rate (CTR)
+
+SELECT app_id,
+ROUND( 
+  (Sum(CASE WHEN event_type = 'click' THEN 1 ELSE 0 END)*100.0) /
+    Sum(CASE WHEN event_type = 'impression' THEN 1 ELSE 0 END)
+  , 2) as ctr
+FROM events
+WHERE EXTRACT (YEAR from timestamp) = '2022'
+GROUP BY app_id;
+
+============================================================================================
+
+Challenge Name: User's Third Transaction
+
+SELECT user_id, spend, transaction_date
+FROM (SELECT *, 
+  RANK() OVER(partition by user_id order by transaction_date) as trans_num
+  FROM transactions) t
+WHERE trans_num = 3
+
+============================================================================================
