@@ -1,1 +1,22 @@
+Challenge Name: Highest-Grossing Items
 
+WITH t as(
+  SELECT  category, product, 
+  SUM(spend) as total_spend
+  FROM product_spend
+  WHERE EXTRACT(YEAR from transaction_date) = '2022'
+  GROUP BY category, product
+),
+
+t1 as(
+  SELECT *,
+  RANK() OVER (partition by category order by total_spend Desc) as ranking
+  FROM t
+)
+
+SELECT category, product, total_spend
+FROM t1 
+WHERE ranking < 3;
+
+
+============================================================================================
