@@ -315,4 +315,15 @@ ORDER BY advertiser_id;
 
 ============================================================================================
 
+Challenge Name: Average Review Ratings
+
+SELECT EXTRACT(Month from submit_date) as month, product_id,
+ROUND(AVG(stars), 2) as avg_stars
+FROM reviews
+GROUP BY month, product_id
+ORDER BY month, product_id;
+
+
+============================================================================================
+
 
