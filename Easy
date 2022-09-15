@@ -208,4 +208,111 @@ GROUP BY transaction_date;
 
 ============================================================================================
 
+Challenge Name: Unfinished Parts
+
+SELECT distinct part 
+FROM parts_assembly
+WHERE finish_date is NULL;
+
+============================================================================================
+
+Challenge Name: Photoshop Revenue Analysis
+
+SELECT customer_id, SUM(revenue)
+FROM adobe_transactions
+WHERE customer_id in (
+  SELECT distinct customer_id 
+  FROM adobe_transactions
+  WHERE product = 'Photoshop'
+)
+  AND product <> 'Photoshop'
+GROUP BY customer_id
+ORDER BY customer_id;
+
+============================================================================================
+
+Challenge Name: Subject Matter Experts
+
+SELECT employee_id
+FROM employee_expertise
+GROUP BY employee_id
+HAVING (SUM(years_of_experience) >= 8 AND COUNT(domain) = 1)
+  OR (SUM(years_of_experience) >= 12 AND COUNT(domain) = 2);
+  
+ ====== OR ======
+
+WITH t as (
+  SELECT employee_id, domain, 
+  SUM(years_of_experience) OVER(partition by employee_id, domain) as dom_exp,
+  SUM(years_of_experience) OVER(partition by employee_id) as total_exp,
+  COUNT(domain) OVER(partition by employee_id) as dom_cnt
+  FROM employee_expertise
+)
+
+SELECT distinct employee_id 
+FROM t
+WHERE dom_exp>=8 OR (total_exp >= 12 AND dom_cnt = 2);
+
+============================================================================================
+
+Challenge Name: Data Science Skills
+
+SELECT candidate_id 
+FROM candidates
+WHERE skill in ('Python', 'Tableau', 'PostgreSQL')
+GROUP BY candidate_id
+HAVING COUNT(skill) = 3
+ORDER BY candidate_id;
+
+============================================================================================
+
+Challenge Name: Final Account Balance
+
+SELECT account_id,
+SUM(Case WHEN transaction_type = 'Deposit' then amount else 0 end) - 
+  SUM(Case WHEN transaction_type = 'Deposit' then 0 else amount end) as final_balance
+FROM transactions
+GROUP BY account_id;
+
+============================================================================================
+
+Challenge Name: Compensation Outliers
+
+WITH t as (
+  SELECT *,
+  AVG(salary) OVER(partition by title) as avg_sal
+  FROM employee_pay
+)
+
+SELECT employee_id, salary,
+CASE WHEN salary > 2 * avg_sal THEN 'Overpaid'
+     WHEN salary < 0.5 * avg_sal THEN 'Underpaid'
+     END as status
+FROM t  
+WHERE salary > 2 * avg_sal OR salary < 0.5 * avg_sal;  
+
+============================================================================================
+
+Challenge Name: Unique Money transfer Relationships
+
+WITH t as (
+  SELECT payer_id, recipient_id FROM payments
+  INTERSECT
+  SELECT recipient_id, payer_id FROM payments
+)
+
+SELECT COUNT(payer_id)/2 as unique_relationships
+FROM t;
+
+============================================================================================
+
+Challenge Name: Ad Campaign ROAS
+
+SELECT advertiser_id, ROUND((SUM(revenue)/SUM(spend))::DECIMAL, 2) as ROAS
+FROM ad_campaigns
+GROUP BY advertiser_id
+ORDER BY advertiser_id;
+
+============================================================================================
+
 
