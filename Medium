@@ -20,3 +20,20 @@ WHERE ranking < 3;
 
 
 ============================================================================================
+
+Challenge Name: Compensation Outliers
+
+WITH t as (
+  SELECT *,
+  AVG(salary) OVER(partition by title) as avg_sal
+  FROM employee_pay
+)
+
+SELECT employee_id, salary,
+CASE WHEN salary > 2 * avg_sal THEN 'Overpaid'
+     WHEN salary < 0.5 * avg_sal THEN 'Underpaid'
+     END as status
+FROM t  
+WHERE salary > 2 * avg_sal OR salary < 0.5 * avg_sal;  
+
+============================================================================================
