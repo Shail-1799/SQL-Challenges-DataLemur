@@ -88,3 +88,32 @@ FROM total_trans
 ORDER BY order_date;
 
 ============================================================================================
+
+Challenge Name: Sending Vs. opening Snaps
+
+SELECT 
+age_bucket,
+ROUND(SUM(CASE WHEN activity_type = 'send' THEN time_spent ELSE 0 END)*100/
+  SUM(CASE WHEN activity_type <> 'chat' THEN time_spent ELSE 0 END), 2) as send_perc,
+ROUND(SUM(CASE WHEN activity_type = 'open' THEN time_spent ELSE 0 END)*100/
+  SUM(CASE WHEN activity_type <> 'chat' THEN time_spent ELSE 0 END), 2) as open_perc
+FROM activities a INNER JOIN age_breakdown b on a.user_id = b.user_id
+GROUP BY age_bucket;
+============================================================================================
+
+Challenge Name: Odd and Even Measurements
+
+WITH t as (
+  SELECT *,
+  ROW_NUMBER() OVER(PARTITION BY DATE_PART('day', measurement_time) ORDER BY measurement_time) as num_m
+  FROM measurements
+)
+
+SELECT DATE(measurement_time),
+SUM(CASE WHEN num_m%2 <> 0 THEN measurement_value ELSE 0 END) as odd_sum,
+SUM(CASE WHEN num_m%2 = 0 THEN measurement_value ELSE 0 END) as even_sum
+FROM t
+GROUP BY DATE(measurement_time)
+ORDER BY DATE(measurement_time);
+
+============================================================================================
