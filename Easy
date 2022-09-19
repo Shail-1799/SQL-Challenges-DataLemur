@@ -32,16 +32,6 @@ FROM viewership;
 
 ============================================================================================
 
-Challenge Name: Purchasing Activity by Product Type
-
-Solution:
-SELECT order_date, product_type,
-Sum(quantity) OVER (partition by product_type ORDER BY order_date) as cum_purchased
-FROM total_trans
-ORDER BY order_date;
-
-============================================================================================
-
 Challenge Name: Teams Power Users
 
 SELECT sender_id, Count(message_id) c
@@ -93,37 +83,6 @@ ORDER BY datacenter_id;
 
 ============================================================================================
 
-Challenge Name: Repeat Purchases on Multiple Days
-
-SELECT Count(Distinct user_id) as num_user
-FROM 
-(SELECT user_id, product_id, Count(Distinct DATE(purchase_date)) 
-FROM purchases
-GROUP BY user_id, product_id
-HAVING Count(Distinct DATE(purchase_date)) > 1) as t;
-
-
---- OR --- Using CTE and Rank() ----
-
-WITH ranking AS (
-  SELECT 
-    user_id, 
-    RANK() OVER (PARTITION BY user_id, product_id 
-      ORDER BY DATE(purchase_date) ASC
-    ) AS purchase_no 
-  FROM 
-    purchases
-) 
-SELECT 
-  COUNT(DISTINCT user_id) AS users_num 
-FROM 
-  ranking 
-WHERE 
-  purchase_no = 2;
-
-
-============================================================================================
-
 Challenge Name: Duplicate Job Listings
 
 WITH t as (
@@ -159,38 +118,6 @@ GROUP BY app_id;
 
 ============================================================================================
 
-Challenge Name: User's Third Transaction
-
-SELECT user_id, spend, transaction_date
-FROM (SELECT *, 
-  RANK() OVER(partition by user_id order by transaction_date) as trans_num
-  FROM transactions) t
-WHERE trans_num = 3
-
-============================================================================================
-
-Challenge Name: Highest-Grossing Items
-
-WITH t as(
-  SELECT  category, product, 
-  SUM(spend) as total_spend
-  FROM product_spend
-  WHERE EXTRACT(YEAR from transaction_date) = '2022'
-  GROUP BY category, product
-),
-
-t1 as(
-  SELECT *,
-  RANK() OVER (partition by category order by total_spend Desc) as ranking
-  FROM t
-)
-
-SELECT category, product, total_spend
-FROM t1 
-WHERE ranking < 3;
-
-
-============================================================================================
 
 Challenge Name: Histogram of Users and Purchases
 
