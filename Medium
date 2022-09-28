@@ -117,3 +117,34 @@ GROUP BY DATE(measurement_time)
 ORDER BY DATE(measurement_time);
 
 ============================================================================================
+
+Challenge Name: Frequently Purchased Pairs
+
+WITH purchases as (
+  SELECT transaction_id, t.product_id, product_name 
+  FROM transactions t INNER JOIN products p 
+  ON t.product_id = p.product_id
+)
+
+SELECT p1.product_name, p2.product_name, COUNT(*) as combo_num
+FROM purchases p1 INNER JOIN purchases p2
+ON p1.transaction_id = p2.transaction_id
+AND p1.product_id > P2.product_id
+GROUP BY p1.product_name, p2.product_name
+ORDER BY combo_num DESC
+LIMIT 3;
+
+============================================================================================
+
+Challenge Name: First Transaction
+
+WITH t as (
+  SELECT *,
+  RANK() OVER(PARTITION BY user_id ORDER BY transaction_date, transaction_id) as t_rank
+  FROM user_transactions
+)
+
+SELECT COUNT(user_id)
+FROM T 
+WHERE t_rank = 1 
+AND spend > 50.0;
