@@ -243,5 +243,29 @@ FROM emails e INNER JOIN texts t on e.email_id = t.email_id
 WHERE DATE_PART('day', action_date - signup_date) = 1;
 
 
+============================================================================================
 
+Challenge Name: Top Rated Business
+
+SELECT  COUNT(business_id) as business_count,
+ROUND(100.0 * COUNT(business_id) / (SELECT COUNT(business_id) FROM reviews) , 0)
+FROM reviews
+WHERE review_stars in (4, 5);
+
+
+WHERE DATE_PART('day', action_date - signup_date) = 1;
+
+
+============================================================================================
+
+Challenge Name: Apple Pay Volume
+
+SELECT merchant_id,
+SUM(CASE WHEN LOWER(payment_method)  = 'apple pay' THEN transaction_amount ELSE 0 END) as total_transaction
+FROM transactions
+GROUP BY merchant_id
+ORDER BY total_transaction DESC;
+
+
+============================================================================================
 
