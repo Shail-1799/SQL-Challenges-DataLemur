@@ -148,3 +148,69 @@ SELECT COUNT(user_id)
 FROM T 
 WHERE t_rank = 1 
 AND spend > 50.0;
+
+============================================================================================
+
+Challenge Name: First Transaction
+
+WITH t as (
+  SELECT *,
+  RANK() OVER(PARTITION BY user_id ORDER BY transaction_date, transaction_id) as t_rank
+  FROM user_transactions
+)
+
+SELECT COUNT(user_id)
+FROM T 
+WHERE t_rank = 1 
+AND spend > 50.0;
+
+
+============================================================================================
+
+Challenge Name: LinkedIn Power Creaters (Part 2)
+
+WITH max_company AS (
+  SELECT p.profile_id, p.followers, MAX(c.followers) as comp_followers
+  FROM personal_profiles p JOIN employee_company e ON p.profile_id = e.personal_profile_id
+  JOIN company_pages c ON e.company_id = c.company_id
+  GROUP BY p.profile_id, p.followers
+  )
+  
+SELECT profile_id
+FROM max_company
+WHERE followers > comp_followers
+ORDER BY profile_id
+
+
+============================================================================================
+
+Challenge Name: Top 5 Artists
+
+WITH Top_10_Rank AS (
+  SELECT a.artist_name,  COUNT(r.song_id) as top_10_appearances
+  FROM artists a JOIN songs s ON a.artist_id = s.artist_id
+  JOIN global_song_rank r ON s.song_id = r.song_id
+  WHERE rank < 11
+  GROUP BY a.artist_name
+  ),
+  
+Top_Artists AS (
+  SELECT artist_name, 
+  DENSE_RANK() OVER(ORDER BY top_10_appearances DESC) as artist_rank
+  FROM Top_10_Rank
+  )
+  
+SELECT *
+FROM Top_Artists
+WHERE artist_rank < 6 ;
+
+
+============================================================================================
+
+Challenge Name: Signup Confirmation Rate
+
+SELECT ROUND(1.0 * COUNT(user_id) / (SELECT COUNT(user_id)  FROM emails), 2) 
+FROM emails e JOIN texts t on e.email_id = t.email_id
+WHERE signup_action = 'Confirmed';
+
+
