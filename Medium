@@ -214,3 +214,39 @@ FROM emails e JOIN texts t on e.email_id = t.email_id
 WHERE signup_action = 'Confirmed';
 
 
+============================================================================================
+
+Challenge Name: Spotify Streaming History
+
+WITH Temp AS (
+
+  SELECT user_id, song_id, COUNT(song_id) as song_plays
+  FROM songs_weekly
+  WHERE listen_time <= '08/04/2022 23:59:59'
+  GROUP BY user_id, song_id
+  
+  UNION ALL
+  
+  SELECT user_id, song_id, song_plays
+  FROM songs_history
+  )
+  
+SELECT user_id, song_id, SUM(song_plays) as song_count
+FROM Temp
+GROUP BY user_id, song_id
+ORDER BY song_count DESC;
+
+
+============================================================================================
+
+Challenge Name: Same week Purchases
+
+SELECT ROUND(100.0 * COUNT(DISTINCT p.user_id) / COUNT(DISTINCT s.user_id), 2)
+FROM signups s LEFT JOIN user_purchases p ON s.user_id = p.user_id
+WHERE purchase_date IS NULL
+OR (purchase_date BETWEEN signup_date AND (signup_date + '7 days'::INTERVAL));
+
+
+============================================================================================
+
+Challenge Name: 
