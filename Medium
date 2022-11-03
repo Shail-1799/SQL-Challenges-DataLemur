@@ -249,4 +249,17 @@ OR (purchase_date BETWEEN signup_date AND (signup_date + '7 days'::INTERVAL));
 
 ============================================================================================
 
-Challenge Name: 
+Challenge Name: Invalid Search Results
+
+WITH Pct AS (
+  SELECT country, SUM(num_search) as total_search 
+  ,ROUND(SUM(num_search * invalid_result_pct /100), 2) as invalid_search
+  FROM search_category
+  WHERE invalid_result_pct IS NOT NULL
+  GROUP BY country
+  )
+
+SELECT country, total_search 
+,ROUND((100 * invalid_search / total_search), 2) as invalid_search_pct
+FROM Pct
+ORDER BY country ASC;
