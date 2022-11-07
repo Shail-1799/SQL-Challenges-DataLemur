@@ -293,3 +293,19 @@ FROM transactions t1 JOIN transactions t2
   ON Date(t3.transaction_date) = Date(t1.transaction_date) + 2
 ORDER BY t1.user_id
 
+
+============================================================================================
+
+Challenge Name: Fill Missing Client Data
+
+WITH Cat_Table AS (
+  SELECT * ,
+  COUNT(category) OVER(ORDER BY product_id) as cat_grp
+  FROM products
+  )
+  
+SELECT product_id
+,FIRST_VALUE(category) OVER(PARTITION BY cat_grp) as category
+,name
+FROM Cat_Table;
+
