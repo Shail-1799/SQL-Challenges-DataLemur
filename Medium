@@ -263,3 +263,16 @@ SELECT country, total_search
 ,ROUND((100 * invalid_search / total_search), 2) as invalid_search_pct
 FROM Pct
 ORDER BY country ASC;
+
+
+============================================================================================
+
+Challenge Name: USer Shopping Sprees
+
+SELECT  DISTINCT t1.user_id
+FROM transactions t1 JOIN transactions t2 
+  ON Date(t2.transaction_date) = Date(t1.transaction_date) + 1
+  JOIN transactions t3 
+  ON Date(t3.transaction_date) = Date(t1.transaction_date) + 2
+ORDER BY t1.user_id
+
