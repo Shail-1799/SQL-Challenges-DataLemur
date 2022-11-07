@@ -267,6 +267,23 @@ ORDER BY country ASC;
 
 ============================================================================================
 
+Challenge Name: Tweets' Rolling Averages
+
+WITH Temp AS (
+  SELECT user_id, tweet_date, COUNT(DISTINCT tweet_id) as num_tweet
+  FROM tweets
+  GROUP BY user_id, tweet_date
+  ORDER BY user_id, tweet_date 
+  )
+  
+SELECT user_id, tweet_date
+,ROUND(AVG(num_tweet) OVER(PARTITION BY user_id ORDER BY user_id, tweet_date 
+    ROWS BETWEEN 2 PRECEDING AND CURRENT ROW ), 2) as rolling_3day_avg
+FROM Temp
+
+
+============================================================================================
+
 Challenge Name: USer Shopping Sprees
 
 SELECT  DISTINCT t1.user_id
