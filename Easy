@@ -269,3 +269,55 @@ ORDER BY total_transaction DESC;
 
 ============================================================================================
 
+Challenge Name: Cards Issued Difference
+
+SELECT card_name
+, MAX(issued_amount)  - MIN(issued_amount) as difference
+FROM monthly_cards_issued
+GROUP BY card_name
+ORDER BY difference DESC
+
+
+============================================================================================
+
+Challenge Name: Compressed Mean
+
+SELECT ROUND(SUM(item_count::DECIMAL * order_occurrences)/SUM(order_occurrences), 1) 
+FROM items_per_order;
+
+============================================================================================
+
+Challenge Name: Pharmacy Analytics (Part 1)
+
+SELECT drug,
+SUM(total_sales - cogs) as total_profit
+FROM pharmacy_sales
+GROUP BY drug
+ORDER BY total_profit DESC
+LIMIT 3;
+
+
+============================================================================================
+
+
+Challenge Name: Pharmacy Analytics (Part 2)
+
+SELECT manufacturer, COUNT(drug) as drug_count, SUM(cogs - total_sales) as total_loss
+FROM pharmacy_sales
+WHERE cogs > total_sales
+GROUP BY manufacturer
+ORDER BY total_loss DESC;
+
+============================================================================================
+
+
+Challenge Name: Pharmacy Analytics (Part 3)
+
+SELECT manufacturer, Concat('$', ROUND(SUM(total_sales)/1000000), ' million') as sale 
+FROM pharmacy_sales
+GROUP BY manufacturer
+ORDER BY SUM(total_sales) DESC;
+
+============================================================================================
+
+
