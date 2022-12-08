@@ -349,3 +349,34 @@ WITH T AS (
 SELECT customer_id
 FROM T
 WHERE cat_count = (SELECT COUNT(DISTINCT product_category) from products);
+
+
+============================================================================================
+
+Challenge Name: Card Launch Success
+
+WITH T AS (
+  SELECT card_name,
+  Dense_Rank() OVER(PARTITION BY card_name ORDER BY issue_year, issue_month) as month_rnk ,
+  issued_amount
+  FROM monthly_cards_issued
+  )
+
+SELECT card_name, issued_amount
+FROM T 
+WHERE month_rnk = 1
+ORDER BY issued_amount DESC
+
+============================================================================================
+
+Challenge Name: Compressed Mode
+
+SELECT item_count 
+FROM items_per_order
+WHERE order_occurrences = (SELECT MODE() WITHIN GROUP (ORDER BY order_occurrences DESC) FROM items_per_order)
+ORDER BY item_count;
+
+============================================================================================
+
+Challenge Name: International Call Percentage
+
