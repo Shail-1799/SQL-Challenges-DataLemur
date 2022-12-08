@@ -380,3 +380,13 @@ ORDER BY item_count;
 
 Challenge Name: International Call Percentage
 
+WITH T AS (
+  SELECT  c.country_id as caller_cntry, r.country_id as rec_cntry
+  FROM phone_calls p JOIN phone_info c on p.caller_id = c.caller_id
+  JOIN phone_info r on p.receiver_id = r.caller_id
+  )
+  
+SELECT ROUND( (SUM(CASE WHEN rec_cntry<>caller_cntry THEN 1 ELSE 0 END)*100.0
+  / (SELECT COUNT(*) from T)), 1)
+FROM T
+
