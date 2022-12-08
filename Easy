@@ -320,4 +320,25 @@ ORDER BY SUM(total_sales) DESC;
 
 ============================================================================================
 
+Challenge Name: Patient Support Analysis (Part 1)
+
+SELECT COUNT(policy_holder_id)
+FROM (
+  SELECT policy_holder_id, COUNT(case_id)
+  FROM callers
+  GROUP BY policy_holder_id
+  HAVING COUNT(case_id)>=3
+)as t ;
+
+============================================================================================
+
+Challenge Name: Patient Support Analysis (Part 2)
+
+SELECT ROUND(SUM(CASE WHEN call_category IS NULL OR call_category='n/a' THEN 1 ELSE 0 END)* 100.0
+  / (SELECT COUNT(*) FROM callers), 1)
+FROM callers;
+
+============================================================================================
+
+
 
